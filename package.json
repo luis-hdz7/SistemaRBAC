@@ -1,0 +1,38 @@
+{
+  "name": "matematicadiscreta",
+  "version": "1.0.0",
+  "description": "En este repositorio se encuentra un proyecto de la clase de Matemática Discreta.",
+  "main": "backEnd/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luis-hdz7/SistemaRBAC.git"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luis-hdz7/SistemaRBAC/issues"
+  },
+  "homepage": "https://github.com/luis-hdz7/SistemaRBAC#readme",
+  "dependencies": {
+    "@arcjet/node": "^1.4.0",
+    "@neondatabase/serverless": "^1.1.0",
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prisma": "^6.19.3"
+  }
+}

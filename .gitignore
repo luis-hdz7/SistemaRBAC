@@ -1,0 +1,14 @@
+# Dependencias de Node
+node_modules/
+
+# Archivos de producción y compilación
+dist/
+coverage/
+
+# Variables de entorno y credenciales (¡Muy importante!)
+.env
+.env.*
+
+# Archivos generados por Prisma
+.prisma/
+/generated/
