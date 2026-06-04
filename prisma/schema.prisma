@@ -14,6 +14,7 @@ datasource db {
 }
 
 //Creación de las tablas
+//usuarios
 model User {
   id_user      String     @id @default(uuid())
   password String
@@ -26,4 +27,15 @@ enum Roles {
   ADMIN
   USER
   EMPLOYEE
+}
+
+//productos
+model Product {
+  id_product String @id @default(uuid())
+  name       String
+  price      Decimal @db.Decimal(10, 2)
+  stock      Int
+  image      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }

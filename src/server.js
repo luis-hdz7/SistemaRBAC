@@ -21,6 +21,42 @@ app.use(morgan("dev"))//log the request
 app.use(express.json())
 app.use(cors())
 
+//aplicar el arcjet rate-limit a todas las rutas
+app.use(async (req, res, next) => {
+  try {
+    const decision = await aj.protect(req, {
+      requested: 1,
+    });
+
+    if (decision.isDenied()) {
+
+      if (decision.reason.isRateLimit()) {
+        return res.status(429).json({
+          error: "Too Many Requests",
+        });
+      }
+
+      if (decision.reason.isBot()) {
+        return res.status(403).json({
+          error: "Forbidden: Bot detected",
+        });
+      }
+
+      return res.status(403).json({
+        error: "Forbidden: Access denied",
+      });
+    }
+
+    next();
+
+  } catch (error) {
+    console.error("Error applying Arcjet middleware:", error);
+
+    return res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+});
 
 //*Routes
 //auth routes
@@ -29,6 +65,7 @@ app.use("/api/users", userRouter)
 
 //app routes
 app.use("/api/products", productRouter)
+
 
 //*Hacer correr el servidor
 app.listen(PORT, () => {
