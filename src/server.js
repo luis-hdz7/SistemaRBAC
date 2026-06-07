@@ -1,99 +1,75 @@
 //*Importaciones
-import express from 'express';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import authRouter from "./routes/authRoutes.js"
-import userRouter from "./routes/userRoutes.js"
-import productRouter from "./routes/productRoutes.js"
-import { config } from "dotenv"
-//Importar las variables de db.js
-import { connectDB,disconnectDB} from "./config/dbConnect.js";
-config();//*"Carga la configuración del archivo .env" eso hace config()
-connectDB();
-//*Inicializar la app
+import express from "express";
+import helmet from "helmet";
+import morgan from "morgan";
+import cors from "cors";
+import dotenv from "dotenv";
+import arcjet, { tokenBucket, shield } from "@arcjet/node";
+import authRouter from "./routes/authRoutes.js";
+import userRouter from "./routes/userRoutes.js";
+import productRouter from "./routes/productRoutes.js";
+import { connectDB, disconnectDB } from "./config/dbConnect.js";
+dotenv.config();
 const app = express();
-dotenv.config()
-const PORT= process.env.PORT || 3000
-app.use(helmet())//secure middleware
-app.use(morgan("dev"))//log the request
-app.use(express.json())
-app.use(cors())
-
-//aplicar el arcjet rate-limit a todas las rutas
+const PORT = process.env.PORT || 3000;
+//*aplicar el arcjet rate-limit a todas las rutas
+const aj = arcjet({
+  key: process.env.ARCJET_KEY,
+  rules: [
+    shield({}),
+    tokenBucket({
+      mode: "LIVE",
+      refillRate: 10,
+      interval: 60,
+      capacity: 20,
+    }),
+  ],
+});
+app.use(helmet());
+app.use(morgan("dev"));
+app.use(express.json());
+app.use(cors());
 app.use(async (req, res, next) => {
   try {
-    const decision = await aj.protect(req, {
-      requested: 1,
-    });
-
+    const decision = await aj.protect(req);
     if (decision.isDenied()) {
-
-      if (decision.reason.isRateLimit()) {
-        return res.status(429).json({
-          error: "Too Many Requests",
-        });
-      }
-
-      if (decision.reason.isBot()) {
-        return res.status(403).json({
-          error: "Forbidden: Bot detected",
-        });
-      }
-
       return res.status(403).json({
-        error: "Forbidden: Access denied",
+        error: "Access denied",
       });
     }
-
     next();
-
-  } catch (error) {
-    console.error("Error applying Arcjet middleware:", error);
-
-    return res.status(500).json({
-      error: "Internal Server Error",
-    });
+  } catch (err) {
+    next(err);
   }
 });
 
-//*Routes
-//auth routes
-app.use("/api/auth",authRouter)
-app.use("/api/users", userRouter)
 
-//app routes
-app.use("/api/products", productRouter)
+//*Rutas
+app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
+app.use("/api/products", productRouter);
 
+let server;
 
 //*Hacer correr el servidor
-app.listen(PORT, () => {
-    console.log(`Servidor escuchando en el puerto ${PORT}`);
-});
+async function startServer() {
+  try {
+    await connectDB();
 
-// Handle unhandled promise rejections (e.g., database connection errors)
-process.on("unhandledRejection", (err) => {
-  console.error("Unhandled Rejection:", err);
-  server.close(async () => {
-    await disconnectDB();
+    server = app.listen(PORT, () => {
+      console.log(`Servidor escuchando en puerto ${PORT}`);
+    });
+
+  } catch (err) {
+    console.error(err);
     process.exit(1);
-  });
-});
-
-//*Casos que queremos manejar errores con nuestra db
-// Handle uncaught exceptions
-process.on("uncaughtException", async (err) => {
-  console.error("Uncaught Exception:", err);
-  await disconnectDB();
-  process.exit(1);
-});
-
-// Graceful shutdown
+  }
+}
+startServer();
 process.on("SIGTERM", async () => {
-  console.log("SIGTERM received, shutting down gracefully");
-  server.close(async () => {
-    await disconnectDB();
-    process.exit(0);
-  });
+  await disconnectDB();
+
+  if (server) {
+    server.close(() => process.exit(0));
+  }
 });

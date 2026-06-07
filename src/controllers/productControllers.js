@@ -1,4 +1,5 @@
 import { prisma } from "../config/dbConnect.js";
+//*Funcion para obtener todos los productos
 export const getAllProducts = async (req, res) => {
     try {
         const products = await prisma.product.findMany();
@@ -15,6 +16,7 @@ export const getAllProducts = async (req, res) => {
         });
     }
 }
+//*Funcion para crear un producto
 export const createProduct = async (req, res) => {
     try {
         const { name, price, stock, image } = req.body;
@@ -45,6 +47,7 @@ export const createProduct = async (req, res) => {
         });
     }
 }
+//*Funcion para obtener un producto en especifico basado en su id
 export const getProduct = async (req, res) => {
     try {
         const { id } = req.params;
@@ -72,6 +75,7 @@ export const getProduct = async (req, res) => {
         });
     }
 }
+//*Funcion para actualizar un producto
 export const updateProduct = async (req, res) => {
     try {
         const productId =req.params.id;
@@ -88,20 +92,17 @@ export const updateProduct = async (req, res) => {
                 message: "At least one field is required",
             });
         }
-
         const productExists = await prisma.product.findUnique({
             where: {
                 id_product: productId,
             },
         });
-
         if (!productExists) {
             return res.status(404).json({
                 status: "error",
                 message: "Product not found",
             });
         }
-
         const product = await prisma.product.update({
             where: {
                 id_product: productId,
@@ -113,23 +114,21 @@ export const updateProduct = async (req, res) => {
                 ...(image !== undefined && { image }),
             },
         });
-
         return res.status(200).json({
             status: "success",
             data: {
                 product,
             },
         });
-
     } catch (error) {
         console.error(error);
-
         return res.status(500).json({
             status: "error",
             message: "Internal server error",
         });
     }
 };
+//*Funcion para eliminar un producto
 export const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;

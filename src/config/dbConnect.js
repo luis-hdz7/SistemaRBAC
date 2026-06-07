@@ -5,6 +5,7 @@ const prisma = new PrismaClient({
         ? ["query", "error", "warn"]
         : ["error"]
 });
+//*Funcion para conectar la base de datos
 const connectDB = async () => {
     try {
         await prisma.$connect();
@@ -14,6 +15,7 @@ const connectDB = async () => {
         process.exit(1);
     }
 };
+//*Funcion para desconectarla
 const disconnectDB = async () => {
     await prisma.$disconnect();
 };

@@ -1,3 +1,5 @@
+//*Funcion que nos permite validar el rol del usuario
+//! IMPORTANTE: Una de las funciones principales que nos permiten traducir de la matematica a codigo
 const authorizeRoles=(...allowedRoles)=> {
     return (req, res, next) => {
         if (!req.user || !allowedRoles.includes(req.user.role)) {

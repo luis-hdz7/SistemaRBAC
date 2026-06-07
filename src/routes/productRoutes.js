@@ -3,10 +3,12 @@ import { getAllProducts, createProduct,getProduct, updateProduct, deleteProduct 
 
 const router = express.Router();
 
+//* Todos pueden acceder a esta ruta (users, employee, admin)
 router.get("/",getAllProducts)
 router.get("/:id",getProduct)
 router.post("/",createProduct)
 router.put("/:id",updateProduct)
+//*Solo ADMIN puede acceder a esta ruta
 router.delete("/:id",deleteProduct)
 
 export default router;

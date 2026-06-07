@@ -5,7 +5,7 @@ import { prisma } from "../config/dbConnect.js";
 export const register =asyncHandler(async (req, res) => {
   const { password,name,role,email } = req.body;
 
-  // Check if user already exists
+  // Verificar que el usuario ya exista
   const userExists = await prisma.user.findUnique({
     where: { email: email },
   });
@@ -20,7 +20,7 @@ export const register =asyncHandler(async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  // Create User
+  // Crear Usuario
   const user = await prisma.user.create({
     data: {
       name,
@@ -41,6 +41,7 @@ export const register =asyncHandler(async (req, res) => {
     },
   });
 });
+//Login
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 

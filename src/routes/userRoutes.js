@@ -1,3 +1,5 @@
+//! Este archivo es de prueba, se utilizo para demostrar que en el backend funcionaba el sistema de roles
+//en el programa nunca se usa
 import { Router } from "express"
 import {verifyToken} from "../middleware/authMiddleware.js"
 import authorizeRoles from "../middleware/roleMiddleware.js"
