@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-//Verificar jwt
+//*Verificar jwt
 export const verifyToken=(req, res, next)=>{
     let token;
     let authHeader=req.headers["authorization"] || req.headers["Authorization"]
@@ -8,7 +8,7 @@ export const verifyToken=(req, res, next)=>{
     }
     if(!token){
         return res.status(401).json({
-            error: "No token provided"
+            error: "No se paso un token"
         })
     }
     try{
@@ -17,11 +17,10 @@ export const verifyToken=(req, res, next)=>{
         next()
     } catch (err) {
         return res.status(403).json({
-            error: "Invalid token"
+            error: "Token no válido"
         })
     }
 }
-
 export default {
     verifyToken
 }

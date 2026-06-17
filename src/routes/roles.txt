@@ -1,0 +1,3 @@
+Reflexiva → Admin ≤ Admin
+Antisimétrica → si A ≤ B y B ≤ A → A = B
+Transitiva → si Empleado ≤ Supervisor y Supervisor ≤ Admin → Empleado ≤ Admin
